@@ -40,11 +40,11 @@ refresh_time = 2.0 - delay  # seconds
 
 # Time to wait after the slots are found
 # Otherwise you will get message after each refresh_time
-time_slot_wait = 6.0 - delay  # seconds
+time_slot_wait = 2.0 - delay  # seconds
 
 # Time to respond the 'No sessions' message
 # So that you know the bot is working 😂
-no_sess_msg_time = 2 * 60  # seconds
+no_sess_msg_time = 9  # seconds
 
 
 if refresh_time < 0.5:
@@ -68,10 +68,17 @@ def start(update: Update, _: CallbackContext) -> None:
         "findByDistrict?district_id=" + dist_g + "&date=" + date_g
     )
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/50.0.2661.102 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
     }
+
+    priority_dict = {
+        'pincode': "Pincode",
+        'available_capacity': "Available Capacity",
+        'min_age_limit': 'Minimum age limit',
+        'name': 'Name',
+        'address': 'Address'
+    }
+    take_other_priority = False
 
     for time_stemp in range(total_ticks):
         lr = requests.get(url, headers=headers)
@@ -80,12 +87,21 @@ def start(update: Update, _: CallbackContext) -> None:
             if finite["sessions"] != []:
                 update.message.reply_text("Hey!!! I found some sessions 🤗")
                 tr1 = ""
+                #print(finite)
                 for center in finite["sessions"]:
-                    for entry in center:
-                        print(entry, center[entry], sep=": ")
-                        tr1 += str(entry) + ": " + str(center[entry]) + "\n"
-                        update.message.reply_text(tr1)
-                        time.sleep(time_slot_wait)
+                    for pri_val in priority_dict:
+                        try:
+                            tr1 += str(priority_dict[pri_val]) + ": " + str(center[pri_val]) + "\n"
+                        except:
+                            pass
+                    if take_other_priority:
+                        for entry in center:
+                            if entry not in priority_dict:
+                                print(entry, center[entry], sep=": ")
+                                tr1 += str(entry) + ": " + str(center[entry]) + "\n"
+                print(tr1)
+                update.message.reply_text(tr1)
+                time.sleep(time_slot_wait)
             else:
                 if ((time_stemp + 1) % no_sess_tick) == 0:
                     print("No sessions yet")
@@ -95,11 +111,11 @@ def start(update: Update, _: CallbackContext) -> None:
                 update.message.reply_text(
                     "Server's response failure,"
                     " reasons: high traffic, try changing your bot's"
-                    "User-Agent header, maybe the server is crashed 🤔"
+                    " User-Agent header, maybe the server is crashed 🤔"
                 )
-            print(lr.text)
+            time.sleep(refresh_time)
         time.sleep(refresh_time)
-        # print(lr.status_code, finite)
+        #print(lr.status_code, finite)
     update.message.reply_text(
         "ASBot session completed, please type: /start or /help"
         " to start a new session"
