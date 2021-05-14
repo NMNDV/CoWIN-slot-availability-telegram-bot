@@ -1,11 +1,10 @@
 """
 Developer     : Naman Dave @NMNDV
-Recent Update : 14-05-2021 16:30:12
+Recent Update : 14-05-2021 17:30:12
 """
 
-import json
+
 import time
-import logging
 import requests
 import datetime
 
@@ -27,6 +26,33 @@ dd = str(tomorrow_DTO.day)
 mm = str(tomorrow_DTO.month)
 yyyy = str(tomorrow_DTO.year)
 
+# The natural delay for the signal
+# The delay to obtain the data and send the user on telegram
+# RTT of data server + RTT of telegram server
+# This you will have to observe and note.
+delay = 0.45  # second
+
+# Telegram bot total session time
+total_time = 40 * 60  # seconds
+
+# Refresh time
+refresh_time = 2.0 - delay  # seconds
+
+# Time to wait after the slots are found
+# Otherwise you will get message after each refresh_time
+time_slot_wait = 6.0 - delay  # seconds
+
+# Time to respond the 'No sessions' message
+# So that you know the bot is working 😂
+no_sess_msg_time = 2 * 60  # seconds
+
+
+if refresh_time < 0.5:
+    refresh_time = 0.5
+
+total_ticks = int(total_time / refresh_time)
+no_sess_tick = int(no_sess_msg_time / refresh_time)
+
 dist_g = str(district_ID)
 date_g = dd + "-" + mm + "-" + yyyy
 
@@ -47,22 +73,32 @@ def start(update: Update, _: CallbackContext) -> None:
         "Chrome/50.0.2661.102 Safari/537.36"
     }
 
-    for i in range(800):
+    for time_stemp in range(total_ticks):
         lr = requests.get(url, headers=headers)
-        finite = lr.json()
-        if finite["sessions"] != []:
-            tr1 = ""
-            for center in finite["sessions"]:
-                for entry in center:
-                    print(entry, center[entry], sep=": ")
-                    tr1 += str(entry) + ": " + str(center[center]) + "\n"
-                    update.message.reply_text(tr1)
-                    time.sleep(2.5)
-        else:
-            if ((i + 1) % 40) == 0:
-                print("No sessions yet")
-                update.message.reply_text("No sessions yet")
-        time.sleep(2.5)
+        try:
+            finite = lr.json()
+            if finite["sessions"] != []:
+                update.message.reply_text("Hey!!! I found some sessions 🤗")
+                tr1 = ""
+                for center in finite["sessions"]:
+                    for entry in center:
+                        print(entry, center[entry], sep=": ")
+                        tr1 += str(entry) + ": " + str(center[center]) + "\n"
+                        update.message.reply_text(tr1)
+                        time.sleep(time_slot_wait)
+            else:
+                if ((time_stemp + 1) % no_sess_tick) == 0:
+                    print("No sessions yet")
+                    update.message.reply_text("No sessions yet 😐")
+        except:
+            if ((time_stemp + 1) % no_sess_tick) == 0:
+                update.message.reply_text(
+                    "Server's response failure,"
+                    " reasons: high traffic, try changing your bot's"
+                    "User-Agent header, maybe the server is crashed 🤔"
+                )
+            print(lr.text)
+        time.sleep(refresh_time)
         # print(lr.status_code, finite)
     update.message.reply_text(
         "ASBot session completed, please type: /start or /help"
