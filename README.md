@@ -61,7 +61,7 @@ Then run the file using the below command
 python cowin_bot_main.py
 ```
 
-Now you bot is online.
+Now your bot is online.
 
 # How to use the CoWIN slot booking bot
 - Open telegram and search the bot name or the username associated with the given token (A good practice is to store the name and the username in the NAME and the USER_NAME variable in the py file).
