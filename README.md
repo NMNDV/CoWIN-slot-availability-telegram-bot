@@ -24,6 +24,31 @@ The default search date is of tomorrow's date, you can also change it (Make sure
 tomorrow_DTO = datetime.date.today() + datetime.timedelta(days=1)
 ```
 
+# The Bot session:
+
+The approximate total time is stored in the variable total_time
+```python
+total_time = 40 * 60  # seconds
+```
+here the total time is 40 miniuts.
+
+The refresh time is stored in the variable refresh_time
+```python
+refresh_time = 2.0 - delay  # seconds
+```
+here the delay is the natural delay caused by obtaining the data and sending them to the user on telegram
+i.e. the RTT of data server + RTT of telegram server
+
+The time we wait after getting atleast one available slot can be changed as below
+```python
+time_slot_wait = 6.0 - delay  # seconds
+```
+
+When there is no session, we do not remp the message filled with no sessions yet, you can set the no session message time as below
+```python
+no_sess_msg_time = 2 * 60  # seconds
+```
+
 You may change the User-Agent header field if required however the default User-Agent works on every platform
 ```python
 headers = {
@@ -36,6 +61,12 @@ Then run the file using the below command
 python cowin_bot_main.py
 ```
 
+Now you bot is online.
+
+# How to use the CoWIN slot booking bot
+- Open telegram and search for the bot or the username associated with the given token
+- While the py file is running, start the conversation by pressing the start button prompted.
+- If you have already started the conversation and want to restart, type /start or /help to start again
 
 
 # Issues
