@@ -83,7 +83,7 @@ def start(update: Update, _: CallbackContext) -> None:
                 for center in finite["sessions"]:
                     for entry in center:
                         print(entry, center[entry], sep=": ")
-                        tr1 += str(entry) + ": " + str(center[center]) + "\n"
+                        tr1 += str(entry) + ": " + str(center[entry]) + "\n"
                         update.message.reply_text(tr1)
                         time.sleep(time_slot_wait)
             else:
