@@ -6,7 +6,7 @@ First install requirements:
 pip install -r requirements.txt
 ```
 
-Then copy and paste the bot token obtained from [@Botfather](https://t.me/botfather), and paste it below line in the py file
+Then copy and paste the bot token obtained from [@Botfather](https://t.me/botfather), and paste it on the line below in the py file
 
 ```python
 TOKEN = "TOKEN from @BotFather"
