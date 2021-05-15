@@ -32,7 +32,7 @@ yyyy = str(tomorrow_DTO.year)
 # The delay to obtain the data and send the user on telegram
 # RTT of data server + RTT of telegram server
 # This you will have to observe and note.
-delay = 1.5  # second
+delay = 0.567  # second
 
 # Telegram bot total session time
 total_time = 40 * 60  # seconds
