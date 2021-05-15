@@ -30,13 +30,13 @@ yyyy = str(tomorrow_DTO.year)
 # The delay to obtain the data and send the user on telegram
 # RTT of data server + RTT of telegram server
 # This you will have to observe and note.
-delay = 0.45  # second
+delay = 0.5  # second
 
 # Telegram bot total session time
 total_time = 40 * 60  # seconds
 
 # Refresh time
-refresh_time = 2.0 - delay  # seconds
+refresh_time = 1.5 - delay  # seconds
 
 # Time to wait after the slots are found
 # Otherwise you will get message after each refresh_time
@@ -44,11 +44,11 @@ time_slot_wait = 2.0 - delay  # seconds
 
 # Time to respond the 'No sessions' message
 # So that you know the bot is working 😂
-no_sess_msg_time = 9  # seconds
+no_sess_msg_time = 20  # seconds
 
 
-if refresh_time < 0.5:
-    refresh_time = 0.5
+if refresh_time < 0:
+    refresh_time = 0
 
 total_ticks = int(total_time / refresh_time)
 no_sess_tick = int(no_sess_msg_time / refresh_time)
@@ -59,7 +59,7 @@ date_g = dd + "-" + mm + "-" + yyyy
 
 def start(update: Update, _: CallbackContext) -> None:
     update.message.reply_text(
-        "Welcome to the Ahmedabad CoWIN slot-availibility bot. "
+        "Welcome to the CoWIN slot-availibility bot. "
         "Developed by NMNDV (git)"
     )
     url = (
@@ -68,7 +68,9 @@ def start(update: Update, _: CallbackContext) -> None:
         "findByDistrict?district_id=" + dist_g + "&date=" + date_g
     )
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/90.0.4430.212 Safari/537.36"
     }
 
     priority_dict = {
@@ -79,15 +81,15 @@ def start(update: Update, _: CallbackContext) -> None:
         'address': 'Address'
     }
     take_other_priority = False
-
-    for time_stemp in range(total_ticks):
+    time_stemp = 0
+    s_time = time.time()
+    while (time.time() - s_time) < total_time:
         lr = requests.get(url, headers=headers)
         try:
             finite = lr.json()
             if finite["sessions"] != []:
                 update.message.reply_text("Hey!!! I found some sessions 🤗")
                 tr1 = ""
-                #print(finite)
                 for center in finite["sessions"]:
                     for pri_val in priority_dict:
                         try:
@@ -99,12 +101,14 @@ def start(update: Update, _: CallbackContext) -> None:
                             if entry not in priority_dict:
                                 print(entry, center[entry], sep=": ")
                                 tr1 += str(entry) + ": " + str(center[entry]) + "\n"
-                print(tr1)
+                print(tr1, datetime.datetime.now().strftime("%H:%M:%S"))
                 update.message.reply_text(tr1)
                 time.sleep(time_slot_wait)
             else:
                 if ((time_stemp + 1) % no_sess_tick) == 0:
-                    print("No sessions yet")
+                    print("No sessions yet "
+                    "" + datetime.datetime.now().strftime("%H:%M:%S")
+                    )
                     update.message.reply_text("No sessions yet 😐")
         except:
             if ((time_stemp + 1) % no_sess_tick) == 0:
@@ -113,8 +117,12 @@ def start(update: Update, _: CallbackContext) -> None:
                     " reasons: high traffic, try changing your bot's"
                     " User-Agent header, maybe the server is crashed 🤔"
                 )
+                print("Error message ", datetime.datetime.now().strftime(
+                    "%H:%M:%S"
+                    ))
             time.sleep(refresh_time)
         time.sleep(refresh_time)
+        time_stemp += 1
         #print(lr.status_code, finite)
     update.message.reply_text(
         "ASBot session completed, please type: /start or /help"
