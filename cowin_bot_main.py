@@ -17,6 +17,7 @@ from telegram.ext import Updater, CommandHandler, CallbackContext
 TOKEN = "TOKEN from @BotFather"
 NAME = "ASBot"
 USR_NAME = "aasetu_bot"
+GROUP_NAME = "CoWINbot"
 
 district_ID = 770  # Ahmedabad
 # for more details reference the table at the end.
