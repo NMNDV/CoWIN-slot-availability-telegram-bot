@@ -67,6 +67,7 @@ Now your bot is online.
 - Open telegram and search the bot name or the username associated with the given token (A good practice is to store the name and the username in the NAME and the USER_NAME variable in the py file).
 - While the py file is running, start the conversation by pressing the start button prompted.
 - If you have already started the conversation and want to restart, type /start or /help to start again
+- ### Now when the bot send you the slot message, you will get the list of pincode, name, and the age limit. So keep your Aarogya Setu app open and enter the pincode and the name and select the slot and you're done with the slot booking.
 
 
 # Issues
