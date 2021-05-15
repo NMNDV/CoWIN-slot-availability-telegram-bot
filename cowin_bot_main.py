@@ -1,6 +1,7 @@
 """
 Developer     : Naman Dave @NMNDV
 Recent Update : 14-05-2021 17:30:12
+Developer Site: nmndv.github.io
 """
 
 
@@ -31,7 +32,7 @@ yyyy = str(tomorrow_DTO.year)
 # The delay to obtain the data and send the user on telegram
 # RTT of data server + RTT of telegram server
 # This you will have to observe and note.
-delay = 0.5  # second
+delay = 1.5  # second
 
 # Telegram bot total session time
 total_time = 40 * 60  # seconds
@@ -45,7 +46,7 @@ time_slot_wait = 2.0 - delay  # seconds
 
 # Time to respond the 'No sessions' message
 # So that you know the bot is working 😂
-no_sess_msg_time = 20  # seconds
+no_sess_msg_time = 10  # seconds
 
 
 if refresh_time < 0:

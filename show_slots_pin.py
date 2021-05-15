@@ -9,8 +9,8 @@ import time
 import requests
 import datetime
 
-district_ID = 770  # Ahmedabad
-# for more details reference the table at the end.
+
+pincode = 380004
 
 tomorrow_DTO = datetime.date.today() + datetime.timedelta(days=1)
 dd = str(tomorrow_DTO.day)
@@ -44,7 +44,7 @@ if refresh_time < 0.0:
 total_ticks = int(total_time / refresh_time)
 no_sess_tick = int(no_sess_msg_time / refresh_time)
 
-dist_g = str(district_ID)
+pin_g = str(pincode)
 date_g = dd + "-" + mm + "-" + yyyy
 
 
@@ -56,7 +56,7 @@ print(
 url = (
     "https://cdn-api.co-vin.in/api/v2/appointment/"
     "sessions/public/"
-    "findByDistrict?district_id=" + dist_g + "&date=" + date_g
+    "findByPin?pincode=" + pin_g + "&date=" + date_g
 )
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -121,49 +121,3 @@ print(
 )
 
 
-"""
-District IDs:
-154 : Ahmedabad
-770 : Ahmedabad Corporation
-174 : Amreli
-179 : Anand
-158 : Aravalli
-159 : Banaskantha
-180 : Bharuch
-175 : Bhavnagar
-771 : Bhavnagar Corporation
-176 : Botad
-181 : Chhotaudepur
-182 : Dahod
-163 : Dang
-168 : Devbhumi Dwaraka
-153 : Gandhinagar
-772 : Gandhinagar Corporation
-177 : Gir Somnath
-816 : gitsre
-815 : gujarathDistrict
-169 : Jamnagar
-773 : Jamnagar Corporation
-178 : Junagadh
-774 : Junagadh Corporation
-156 : Kheda
-170 : Kutch
-183 : Mahisagar
-160 : Mehsana
-171 : Morbi
-184 : Narmada
-164 : Navsari
-185 : Panchmahal
-161 : Patan
-172 : Porbandar
-173 : Rajkot
-775 : Rajkot Corporation
-162 : Sabarkantha
-165 : Surat
-776 : Surat Corporation
-157 : Surendranagar
-166 : Tapi
-155 : Vadodara
-777 : Vadodara Corporation
-167 : Valsad
-"""
