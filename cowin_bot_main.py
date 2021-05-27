@@ -15,12 +15,12 @@ from telegram.ext import Updater, CommandHandler, CallbackContext
 # For obtaining TOKEN refer the site below
 # https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token
 
-TOKEN = "TOKEN from @BotFather"
+TOKEN = "1890081357:AAGXpPCJgcqDMlDNz2JAsBgZd2KVi65HU2I" #"TOKEN from @BotFather"
 NAME = "ASBot"
 USR_NAME = "aasetu_bot"
 GROUP_NAME = "CoWINbot"
 
-district_ID = 770  # Ahmedabad
+district_ID = 777  # Ahmedabad
 # for more details reference the table at the end.
 
 tomorrow_DTO = datetime.date.today() + datetime.timedelta(days=1)
@@ -32,21 +32,21 @@ yyyy = str(tomorrow_DTO.year)
 # The delay to obtain the data and send the user on telegram
 # RTT of data server + RTT of telegram server
 # This you will have to observe and note.
-delay = 0.567  # second
+delay = 0.0  # second
 
 # Telegram bot total session time
 total_time = 40 * 60  # seconds
 
 # Refresh time
-refresh_time = 1.5 - delay  # seconds
+refresh_time = 2.4  # seconds
 
 # Time to wait after the slots are found
 # Otherwise you will get message after each refresh_time
-time_slot_wait = 2.0 - delay  # seconds
+time_slot_wait = 0.0  # seconds
 
 # Time to respond the 'No sessions' message
 # So that you know the bot is working 😂
-no_sess_msg_time = 10  # seconds
+no_sess_msg_time = 110  # seconds
 
 
 if refresh_time < 0:
@@ -85,33 +85,60 @@ def start(update: Update, _: CallbackContext) -> None:
     take_other_priority = False
     time_stemp = 0
     s_time = time.time()
+    success = 0
+    failure = 0
+    cnt = 0
+    tr_prev = ""
     while (time.time() - s_time) < total_time:
         lr = requests.get(url, headers=headers)
         try:
             finite = lr.json()
+            cnt += 1
+            if cnt == 1:
+                print(finite)
             if finite["sessions"] != []:
-                update.message.reply_text("Hey!!! I found some sessions 🤗")
+                
                 tr1 = ""
+                tem_cnt = 1
+                
                 for center in finite["sessions"]:
-                    for pri_val in priority_dict:
-                        try:
-                            tr1 += str(priority_dict[pri_val]) + ": " + str(center[pri_val]) + "\n"
-                        except:
-                            pass
-                    if take_other_priority:
-                        for entry in center:
-                            if entry not in priority_dict:
-                                print(entry, center[entry], sep=": ")
-                                tr1 += str(entry) + ": " + str(center[entry]) + "\n"
-                print(tr1, datetime.datetime.now().strftime("%H:%M:%S"))
-                update.message.reply_text(tr1)
+                    
+                    #print(int(center["available_capacity"]))
+                    #print("1")
+                    if int(center["available_capacity"]) != 0 and int(center["min_age_limit"]) == 18:
+                        tr1 += str(tem_cnt) + ") "
+                        tem_cnt += 1
+                        for pri_val in priority_dict:
+                            try:
+                                tr1 += str(priority_dict[pri_val]) + ": " + str(center[pri_val]) + "\n"
+                            except:
+                                pass
+                        if take_other_priority:
+                            for entry in center:
+                                if entry not in priority_dict:
+                                    print(entry, center[entry], sep=": ")
+                                    tr1 += str(entry) + ": " + str(center[entry]) + "\n"
+                        tr1 += "\n"
+                if (tem_cnt != 1 and tr_prev != tr1) or (((time_stemp + 1) % no_sess_tick) == 0):
+                    update.message.reply_text("Hey!!! I found some sessions 🤗")
+                    print(tr1, datetime.datetime.now().strftime("%H:%M:%S"),
+                    " Success:", success, " Failures:", failure)
+                    update.message.reply_text(tr1)
+                    success = 0
+                    failure = 0
+                success += 1
+                tr_prev = tr1
                 time.sleep(time_slot_wait)
             else:
                 if ((time_stemp + 1) % no_sess_tick) == 0:
                     print("No sessions yet "
-                    "" + datetime.datetime.now().strftime("%H:%M:%S")
+                    "" + datetime.datetime.now().strftime("%H:%M:%S"),
+                    " Success:", success, " Failures:", failure
                     )
                     update.message.reply_text("No sessions yet 😐")
+                    success = 0
+                    failure = 0
+            success += 1
         except:
             if ((time_stemp + 1) % no_sess_tick) == 0:
                 update.message.reply_text(
@@ -121,8 +148,11 @@ def start(update: Update, _: CallbackContext) -> None:
                 )
                 print("Error message ", datetime.datetime.now().strftime(
                     "%H:%M:%S"
-                    ))
-            time.sleep(refresh_time)
+                    ), " Success:", success, " Failures:", failure)
+                success = 0
+                failure = 0
+            failure += 1
+            #time.sleep(refresh_time)
         time.sleep(refresh_time)
         time_stemp += 1
         #print(lr.status_code, finite)
